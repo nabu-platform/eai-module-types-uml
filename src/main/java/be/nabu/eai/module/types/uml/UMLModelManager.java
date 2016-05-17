@@ -24,16 +24,16 @@ import be.nabu.utils.io.api.ByteBuffer;
 import be.nabu.utils.io.api.ReadableContainer;
 import be.nabu.utils.xml.XMLUtils;
 
-public class UMLModelManager extends TypeRegistryManager<UMLRegistry> {
+public class UMLModelManager extends TypeRegistryManager<UMLModelArtifact> {
 
 	public UMLModelManager() {
-		super(UMLRegistry.class);
+		super(UMLModelArtifact.class);
 	}
 
 	@Override
-	public UMLRegistry load(ResourceEntry entry, List<Validation<?>> messages) throws IOException, ParseException {
+	public UMLModelArtifact load(ResourceEntry entry, List<Validation<?>> messages) throws IOException, ParseException {
 		try {
-			UMLRegistry registry = new UMLRegistry(entry.getId());
+			UMLModelArtifact registry = new UMLModelArtifact(entry.getId(), entry.getContainer(), entry.getRepository());
 			registry.setResourceResolver(new EntryResourceResolver(entry));
 			// always load the base types first
 			InputStream input = UMLRegistry.class.getClassLoader().getResourceAsStream("baseTypes.xmi");
