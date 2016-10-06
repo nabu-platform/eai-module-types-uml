@@ -3,10 +3,8 @@ package be.nabu.eai.module.types.uml;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import javafx.event.ActionEvent;
@@ -29,13 +27,12 @@ import be.nabu.libs.property.api.Property;
 import be.nabu.libs.property.api.Value;
 import be.nabu.libs.resources.api.ManageableContainer;
 import be.nabu.libs.resources.api.Resource;
-import be.nabu.libs.resources.api.WritableResource;
 import be.nabu.libs.resources.api.ResourceContainer;
+import be.nabu.libs.resources.api.WritableResource;
 import be.nabu.utils.io.IOUtils;
 import be.nabu.utils.io.api.ByteBuffer;
 import be.nabu.utils.io.api.Container;
 import be.nabu.utils.io.api.WritableContainer;
-import be.nabu.utils.mime.impl.FormatException;
 
 // TODO: don't delete files on upload
 // instead, show all current XMI files in a listview with delete option
@@ -139,8 +136,15 @@ public class UMLModelGUIManager extends TypeRegistryGUIManager<UMLModelArtifact>
 		box.getStyleClass().add("buttons");
 		box.getChildren().addAll(addFiles, deleteFiles);
 		
+		if (artifact.getConfiguration() == null) {
+			artifact.setConfiguration(new UMLModelConfiguration());
+		}
+		SimplePropertyUpdater createUpdater = EAIDeveloperUtils.createUpdater(artifact.getConfiguration(), null);
+		AnchorPane properties = new AnchorPane();
+		MainController.getInstance().showProperties(createUpdater, properties, false);
+		
 		VBox vbox = new VBox();
-		vbox.getChildren().addAll(box, files);
+		vbox.getChildren().addAll(box, files, properties);
 		pane.getChildren().add(vbox);
 		
 		AnchorPane.setLeftAnchor(vbox, 0d);

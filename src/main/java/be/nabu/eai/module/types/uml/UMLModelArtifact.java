@@ -8,6 +8,7 @@ public class UMLModelArtifact extends UMLRegistry {
 
 	private ResourceContainer<?> container;
 	private Repository repository;
+	private UMLModelConfiguration configuration;
 
 	public UMLModelArtifact(String id, ResourceContainer<?> container, Repository repository) {
 		super(id);
@@ -21,6 +22,14 @@ public class UMLModelArtifact extends UMLRegistry {
 
 	public Repository getRepository() {
 		return repository;
+	}
+
+	public UMLModelConfiguration getConfiguration() {
+		return configuration;
+	}
+
+	public void setConfiguration(UMLModelConfiguration configuration) {
+		this.configuration = configuration;
 	}
 
 }
