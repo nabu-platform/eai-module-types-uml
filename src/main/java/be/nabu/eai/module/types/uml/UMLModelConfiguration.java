@@ -6,7 +6,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class UMLModelConfiguration {
 	
 	private boolean generateCollectionNames, addDatabaseFields = true, generateFlatDocuments = true;
-
+	private String createdField = "dbCreatedUtc", modifiedField = "dbModifiedUtc";
+	
 	public boolean isGenerateCollectionNames() {
 		return generateCollectionNames;
 	}
@@ -24,5 +25,17 @@ public class UMLModelConfiguration {
 	}
 	public void setGenerateFlatDocuments(boolean generateFlatDocuments) {
 		this.generateFlatDocuments = generateFlatDocuments;
+	}
+	public String getCreatedField() {
+		return createdField;
+	}
+	public void setCreatedField(String createdField) {
+		this.createdField = createdField;
+	}
+	public String getModifiedField() {
+		return modifiedField;
+	}
+	public void setModifiedField(String modifiedField) {
+		this.modifiedField = modifiedField;
 	}
 }

@@ -70,6 +70,8 @@ public class UMLModelManager extends TypeRegistryManager<UMLModelArtifact> {
 					registry.setAddDatabaseFields(registry.getConfiguration().isAddDatabaseFields());
 					registry.setGenerateCollectionNames(registry.getConfiguration().isGenerateCollectionNames());
 					registry.setGenerateFlatDocuments(registry.getConfiguration().isGenerateFlatDocuments());
+					registry.setCreatedField(registry.getConfiguration().getCreatedField());
+					registry.setModifiedField(registry.getConfiguration().getModifiedField());
 				}
 				finally {
 					readable.close();
