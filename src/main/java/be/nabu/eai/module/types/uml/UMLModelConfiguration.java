@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class UMLModelConfiguration {
 	
 	private boolean generateCollectionNames, addDatabaseFields = true, generateFlatDocuments = true;
-	private String createdField = "dbCreatedUtc", modifiedField = "dbModifiedUtc";
+	private String createdField = "created", modifiedField = "modified";
 	
 	public boolean isGenerateCollectionNames() {
 		return generateCollectionNames;
