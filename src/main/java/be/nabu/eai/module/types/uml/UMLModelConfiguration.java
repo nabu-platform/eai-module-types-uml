@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "umlModel")
 public class UMLModelConfiguration {
 	
-	private boolean generateCollectionNames, addDatabaseFields = true, generateFlatDocuments = true;
+	private boolean generateCollectionNames, addDatabaseFields = true, generateFlatDocuments = true, inverseParentChildRelationship;
 	private String createdField = "created", modifiedField = "modified";
 	
 	public boolean isGenerateCollectionNames() {
@@ -38,4 +38,11 @@ public class UMLModelConfiguration {
 	public void setModifiedField(String modifiedField) {
 		this.modifiedField = modifiedField;
 	}
+	public boolean isInverseParentChildRelationship() {
+		return inverseParentChildRelationship;
+	}
+	public void setInverseParentChildRelationship(boolean inverseParentChildRelationship) {
+		this.inverseParentChildRelationship = inverseParentChildRelationship;
+	}
+	
 }
