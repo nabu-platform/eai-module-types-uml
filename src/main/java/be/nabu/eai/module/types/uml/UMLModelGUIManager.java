@@ -141,7 +141,7 @@ public class UMLModelGUIManager extends TypeRegistryGUIManager<UMLModelArtifact>
 		}
 		SimplePropertyUpdater createUpdater = EAIDeveloperUtils.createUpdater(artifact.getConfiguration(), null);
 		AnchorPane properties = new AnchorPane();
-		MainController.getInstance().showProperties(createUpdater, properties, false);
+		MainController.getInstance().showProperties(createUpdater, properties, true);
 		
 		VBox vbox = new VBox();
 		vbox.getChildren().addAll(box, files, properties);

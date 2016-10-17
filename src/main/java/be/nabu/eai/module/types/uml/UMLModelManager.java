@@ -9,18 +9,23 @@ import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import be.nabu.eai.module.types.xml.EntryResourceResolver;
+import be.nabu.eai.repository.api.Repository;
 import be.nabu.eai.repository.api.ResourceEntry;
+import be.nabu.eai.repository.jaxb.ArtifactXMLAdapter;
 import be.nabu.eai.repository.managers.base.TypeRegistryManager;
 import be.nabu.libs.resources.ResourceReadableContainer;
 import be.nabu.libs.resources.api.ManageableContainer;
 import be.nabu.libs.resources.api.ReadableResource;
 import be.nabu.libs.resources.api.Resource;
+import be.nabu.libs.resources.api.ResourceContainer;
 import be.nabu.libs.resources.api.WritableResource;
 import be.nabu.libs.types.uml.UMLRegistry;
 import be.nabu.libs.validator.api.Validation;
@@ -45,7 +50,7 @@ public class UMLModelManager extends TypeRegistryManager<UMLModelArtifact> {
 			}
 			WritableContainer<ByteBuffer> writable = ((WritableResource) resource).getWritable();
 			try {
-				marshal(artifact.getConfiguration(), IOUtils.toOutputStream(writable));
+				marshal(artifact.getRepository(), artifact.getConfiguration(), IOUtils.toOutputStream(writable));
 			}
 			finally {
 				writable.close();
@@ -66,13 +71,14 @@ public class UMLModelManager extends TypeRegistryManager<UMLModelArtifact> {
 			if (configurationResource != null) {
 				ReadableContainer<ByteBuffer> readable = ((ReadableResource) configurationResource).getReadable();
 				try {
-					registry.setConfiguration(unmarshal(IOUtils.toInputStream(readable)));
+					registry.setConfiguration(unmarshal(entry.getRepository(), IOUtils.toInputStream(readable)));
 					registry.setAddDatabaseFields(registry.getConfiguration().isAddDatabaseFields());
 					registry.setGenerateCollectionNames(registry.getConfiguration().isGenerateCollectionNames());
 					registry.setGenerateFlatDocuments(registry.getConfiguration().isGenerateFlatDocuments());
 					registry.setCreatedField(registry.getConfiguration().getCreatedField());
 					registry.setModifiedField(registry.getConfiguration().getModifiedField());
 					registry.setInverseParentChildRelationship(registry.getConfiguration().isInverseParentChildRelationship());
+					registry.setImports(registry.getConfiguration().getImports());
 				}
 				finally {
 					readable.close();
@@ -89,17 +95,8 @@ public class UMLModelManager extends TypeRegistryManager<UMLModelArtifact> {
 				input.close();
 			}
 			List<Document> documents = new ArrayList<Document>();
-			for (Resource child : entry.getContainer()) {
-				if (child.getName().endsWith(".xmi") && child instanceof ReadableResource) {
-					ReadableContainer<ByteBuffer> readable = new ResourceReadableContainer((ReadableResource) child);
-					try {
-						documents.add(XMLUtils.toDocument(IOUtils.toInputStream(readable), true));
-					}
-					finally {
-						readable.close();
-					}
-				}
-			}
+			// load own documents
+			loadDocuments(entry.getContainer(), documents);
 			// load all existing xmi files together (because we don't know the order they should be loaded in)
 			registry.load(documents.toArray(new Document[documents.size()]));
 			
@@ -113,20 +110,39 @@ public class UMLModelManager extends TypeRegistryManager<UMLModelArtifact> {
 		}
 	}
 
-	public static UMLModelConfiguration unmarshal(InputStream input) {
+	private void loadDocuments(ResourceContainer<?> container, List<Document> documents) throws IOException, SAXException, ParserConfigurationException {
+		for (Resource child : container) {
+			if (child.getName().endsWith(".xmi") && child instanceof ReadableResource) {
+				ReadableContainer<ByteBuffer> readable = new ResourceReadableContainer((ReadableResource) child);
+				try {
+					documents.add(XMLUtils.toDocument(IOUtils.toInputStream(readable), true));
+				}
+				finally {
+					readable.close();
+				}
+			}
+		}
+	}
+
+	public static UMLModelConfiguration unmarshal(Repository repository, InputStream input) {
 		try {
 			JAXBContext context = JAXBContext.newInstance(UMLModelConfiguration.class);
-			return (UMLModelConfiguration) context.createUnmarshaller().unmarshal(input);
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			unmarshaller.setAdapter(new ArtifactXMLAdapter(repository));
+			return (UMLModelConfiguration) unmarshaller.unmarshal(input);
 		}
 		catch (JAXBException e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
-	public static void marshal(UMLModelConfiguration configuration, OutputStream output) {
+	public static void marshal(Repository repository, UMLModelConfiguration configuration, OutputStream output) {
 		try {
 			JAXBContext context = JAXBContext.newInstance(UMLModelConfiguration.class);
-			context.createMarshaller().marshal(configuration, output);
+			Marshaller marshaller = context.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			marshaller.setAdapter(new ArtifactXMLAdapter(repository));
+			marshaller.marshal(configuration, output);
 		}
 		catch (JAXBException e) {
 			throw new RuntimeException(e);
