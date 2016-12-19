@@ -10,7 +10,7 @@ import be.nabu.eai.repository.jaxb.ArtifactXMLAdapter;
 @XmlRootElement(name = "umlModel")
 public class UMLModelConfiguration {
 	
-	private boolean generateCollectionNames, addDatabaseFields = true, generateFlatDocuments = true, inverseParentChildRelationship;
+	private boolean generateCollectionNames, addDatabaseFields = true, generateFlatDocuments = true, inverseParentChildRelationship, useLongs;
 	private String createdField = "created", modifiedField = "modified";
 	private List<UMLModelArtifact> imports;
 	
@@ -57,6 +57,13 @@ public class UMLModelConfiguration {
 	}
 	public void setImports(List<UMLModelArtifact> imports) {
 		this.imports = imports;
+	}
+
+	public boolean isUseLongs() {
+		return useLongs;
+	}
+	public void setUseLongs(boolean useLongs) {
+		this.useLongs = useLongs;
 	}
 	
 }

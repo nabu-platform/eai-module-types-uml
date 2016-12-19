@@ -79,6 +79,7 @@ public class UMLModelManager extends TypeRegistryManager<UMLModelArtifact> {
 					registry.setModifiedField(registry.getConfiguration().getModifiedField());
 					registry.setInverseParentChildRelationship(registry.getConfiguration().isInverseParentChildRelationship());
 					registry.setImports(registry.getConfiguration().getImports());
+					registry.setUuids(!registry.getConfiguration().isUseLongs());
 				}
 				finally {
 					readable.close();
