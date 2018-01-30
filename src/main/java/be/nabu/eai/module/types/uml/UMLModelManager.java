@@ -80,6 +80,7 @@ public class UMLModelManager extends TypeRegistryManager<UMLModelArtifact> {
 					registry.setInverseParentChildRelationship(registry.getConfiguration().isInverseParentChildRelationship());
 					registry.setImports(registry.getConfiguration().getImports());
 					registry.setUuids(!registry.getConfiguration().isUseLongs());
+					registry.setUseExtensions(registry.getConfiguration().isUseExtensions());
 				}
 				finally {
 					readable.close();
