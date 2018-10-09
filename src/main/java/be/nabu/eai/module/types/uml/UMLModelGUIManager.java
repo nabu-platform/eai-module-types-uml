@@ -137,7 +137,7 @@ public class UMLModelGUIManager extends TypeRegistryGUIManager<UMLModelArtifact>
 		box.getChildren().addAll(addFiles, deleteFiles);
 		
 		if (artifact.getConfiguration() == null) {
-			artifact.setConfiguration(new UMLModelConfiguration());
+			artifact.setConfiguration(new UMLModelConfiguration(true));
 		}
 		SimplePropertyUpdater createUpdater = EAIDeveloperUtils.createUpdater(artifact.getConfiguration(), null);
 		AnchorPane properties = new AnchorPane();

@@ -11,8 +11,18 @@ import be.nabu.eai.repository.jaxb.ArtifactXMLAdapter;
 public class UMLModelConfiguration {
 	
 	private boolean generateCollectionNames, addDatabaseFields = true, generateFlatDocuments = true, inverseParentChildRelationship, useLongs, useExtensions;
-	private String createdField = "created", modifiedField = "modified";
+	private String createdField, modifiedField;
 	private List<UMLModelArtifact> imports;
+	
+	public UMLModelConfiguration() {
+		// auto
+	}
+	public UMLModelConfiguration(boolean initial) {
+		if (initial) {
+			createdField = "created";
+			modifiedField = "modified";
+		}
+	}
 	
 	public boolean isGenerateCollectionNames() {
 		return generateCollectionNames;
