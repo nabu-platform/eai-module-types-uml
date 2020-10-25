@@ -2,6 +2,7 @@ package be.nabu.eai.module.types.uml;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -9,8 +10,12 @@ import java.util.Set;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Side;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -50,6 +55,23 @@ public class UMLModelGUIManager extends TypeRegistryGUIManager<UMLModelArtifact>
 	@Override
 	protected UMLModelArtifact newInstance(MainController controller, RepositoryEntry entry, Value<?>... values) throws IOException {
 		return new UMLModelArtifact(entry.getId(), entry.getContainer(), entry.getRepository());
+	}
+	
+	private AnchorPane tryModel(UMLModelArtifact artifact) {
+		try {
+			AnchorPane pane = new AnchorPane();
+			Class<?> loadClass = Thread.currentThread().getContextClassLoader().loadClass("be.nabu.eai.module.data.model.DataModelGUIManager");
+			for (Method method : loadClass.getMethods()) {
+				if (method.getName().equals("draw")) {
+					method.invoke(null, artifact, pane);
+					return pane;
+				}
+			}
+		}
+		catch (Throwable e) {
+			// ignore
+		}
+		return null;
 	}
 	
 	@Override
@@ -145,12 +167,37 @@ public class UMLModelGUIManager extends TypeRegistryGUIManager<UMLModelArtifact>
 		
 		VBox vbox = new VBox();
 		vbox.getChildren().addAll(box, files, properties);
-		pane.getChildren().add(vbox);
 		
-		AnchorPane.setLeftAnchor(vbox, 0d);
-		AnchorPane.setRightAnchor(vbox, 0d);
-		AnchorPane.setTopAnchor(vbox, 0d);
-		AnchorPane.setBottomAnchor(vbox, 0d);
+		// check if we have the data modeling module installed
+		AnchorPane tryModel = tryModel(artifact);
+		if (tryModel != null) {
+			TabPane tabs = new TabPane();
+			tabs.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
+			tabs.setSide(Side.RIGHT);
+			
+			Tab model = new Tab("Model");
+			model.setContent(tryModel);
+			
+			Tab configuration = new Tab("Configuration");
+			configuration.setContent(vbox);
+			
+			tabs.getTabs().addAll(model, configuration);
+			pane.getChildren().add(tabs);
+			
+			AnchorPane.setLeftAnchor(tabs, 0d);
+			AnchorPane.setRightAnchor(tabs, 0d);
+			AnchorPane.setTopAnchor(tabs, 0d);
+			AnchorPane.setBottomAnchor(tabs, 0d);
+		}
+		// original behavior without data model
+		else {
+			pane.getChildren().add(vbox);
+			AnchorPane.setLeftAnchor(vbox, 0d);
+			AnchorPane.setRightAnchor(vbox, 0d);
+			AnchorPane.setTopAnchor(vbox, 0d);
+			AnchorPane.setBottomAnchor(vbox, 0d);
+		}
+		
 	}
 	
 	public static void reload(Artifact artifact) {
