@@ -70,6 +70,7 @@ public class UMLModelGUIManager extends TypeRegistryGUIManager<UMLModelArtifact>
 		}
 		catch (Throwable e) {
 			// ignore
+			System.err.println("Could not load data model view: " + e.getMessage());
 		}
 		return null;
 	}
